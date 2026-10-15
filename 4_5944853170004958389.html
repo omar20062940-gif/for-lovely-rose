@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>For lovely rose 🤍</title>
+    <!-- مكتبة انفجار القلوب الخارقة -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    
+    <style>
+        :root {
+            --bg-color: #4a0e17; /* اللون النبيتي الداكن الفخم */
+            --accent-color: #ff3366;
+            --text-color: #fff6f6;
+        }
+
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            overflow: hidden;
+        }
+
+        /* شاشة القفل السرية */
+        #lock-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #111;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: all 1s ease-in-out;
+        }
+
+        .lock-box {
+            text-align: center;
+            padding: 30px;
+            border-radius: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+
+        .lock-box input {
+            padding: 12px 20px;
+            font-size: 1.2rem;
+            border: none;
+            border-radius: 25px;
+            text-align: center;
+            outline: none;
+            background: rgba(255, 255, 255, 0.9);
+            color: #333;
+        }
+
+        .lock-box button {
+            margin-top: 15px;
+            padding: 10px 25px;
+            border: none;
+            border-radius: 20px;
+            background-color: var(--accent-color);
+            color: white;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        /* المحتوى الرئيسي */
+        #main-content {
+            opacity: 0;
+            visibility: hidden;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            transition: opacity 2s ease-in-out;
+            position: relative;
+        }
+
+        #hearts-container {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        /* كروت العرض الفخمة */
+        .content-card {
+            z-index: 2;
+            width: 90%;
+            max-width: 650px;
+            min-height: 350px;
+            padding: 40px;
+            background: rgba(74, 14, 23, 0.65);
+            backdrop-filter: blur(12px);
+            border-radius: 25px;
+            border: 1px solid rgba(255, 51, 102, 0.3);
+            box-shadow: 0 0 50px rgba(0,0,0,0.6);
+            animation: float 4s ease-in-out infinite;
+            transition: all 0.5s ease-in-out;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* كرت الرحلة المتعددة الصفحات (مخفي في البداية) */
+        #journey-card {
+            display: none;
+            opacity: 0;
+            transform: scale(0.9);
+        }
+
+        h1 { font-size: 2.5rem; margin-top: 0; margin-bottom: 20px; text-shadow: 2px 2px 8px rgba(0,0,0,0.4); }
+        p { font-size: 1.25rem; line-height: 1.8; margin-bottom: 25px; }
+
+        .magic-btn, .nav-btn, .mood-btn {
+            background: transparent;
+            border: 2px solid var(--accent-color);
+            color: white;
+            padding: 12px 30px;
+            font-size: 1.1rem;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: 0.3s all ease;
+        }
+
+        .magic-btn:hover, .nav-btn:hover {
+            background: var(--accent-color);
+            box-shadow: 0 0 25px var(--accent-color);
+            transform: translateY(-2px);
+        }
+
+        /* نظام الصفحات داخل كرت الرحلة */
+        .page {
+            display: none;
+            animation: fadeIn 0.5s ease-in-out forwards;
+            width: 100%;
+        }
+
+        .page.active { display: block; }
+
+        /* أزرار التنقل تحت */
+        .nav-container {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            margin-top: auto;
+            padding-top: 20px;
+        }
+
+        .nav-btn {
+            padding: 8px 20px;
+            font-size: 0.95rem;
+        }
+
+        /* أزرار المود التفاعلية */
+        .mood-container {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 15px;
+        }
+
+        .mood-btn {
+            padding: 8px 15px;
+            font-size: 0.9rem;
+            border-radius: 15px;
+            border-color: rgba(255,255,255,0.3);
+        }
+
+        .mood-btn:hover {
+            background: rgba(255, 51, 102, 0.4);
+            border-color: var(--accent-color);
+        }
+
+        #mood-reply {
+            margin-top: 15px;
+            font-weight: bold;
+            color: #ffcad4;
+            min-height: 30px;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .heart { position: absolute; color: rgba(255, 51, 102, 0.5); animation: fall linear infinite; }
+        @keyframes fall {
+            0% { transform: translateY(-10vh) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(110vh) rotate(360deg); opacity: 0; }
+        }
+        .error-msg { color: #ff4a4a; margin-top: 10px; display: none; }
+    </style>
+</head>
+<body>
+
+    <!-- شاشة القفل السرية -->
+    <div id="lock-screen">
+        <div class="lock-box">
+            <h2>🔒 الخزنة السرية.. اكتب الباسوورد للدخول</h2>
+            <input type="password" id="password-input" placeholder="اكتب كلمة السر هنا...">
+            <br>
+            <button onclick="checkPassword()">افتح القفل ✨</button>
+            <div id="error-message" class="error-msg">الكلمة غلط.. فكر تاني يا جميل 😉</div>
+        </div>
+    </div>
+
+    <!-- المحتوى الرئيسي -->
+    <div id="main-content">
+        <div id="hearts-container"></div>
+        
+        <!-- الكرت الأول (المقدمة الغامضة) -->
+        <div class="content-card" id="first-card">
+            <h1>إلى رُوح القَلب.. 🤍</h1>
+            <p>
+                كل حاجة في الدنيا ليها نهاية، إلا مكانك في قلبي بيزيد كل ثانية.. <br>
+                عملت المكان ده مخصوص عشان أقولك إنك أحلى حاجة حصلت في عمري، 
+                وإن كل كود كتبته هنا كان بيفكرني بيكي.
+            </p>
+            <button class="magic-btn" onclick="startJourney()">ابدئي الرحلة معنا السحرية! 🚀✨</button>
+        </div>
+
+        <!-- كرت الرحلة المتكاملة الطويلة (هيظهر بعد الدوسة) -->
+        <div class="content-card" id="journey-card">
+            
+            <!-- الصفحة 1: المفاجأة والترحيب -->
+            <div class="page active" id="page1">
+                <h1>مفيش مفر.. بحبك للأبد! 🤍</h1>
+                <p>
+                    كنت عارف إن الفضول هيخليكي تدوسي على الزرار.. <br>
+                    المكان ده من النهاردة ملكك لوحدك، وكل ما تحبي تفتكرينا أو تبتسمي، اكتب الباسوورد بتاعنا وادخلي هنا. دي مجرد البداية بس، اقلبي الصفحة وشوفي الباقي.. 😉
+                </p>
+                <div style="font-size: 2.5rem;">💌</div>
+            </div>
+
+            <!-- الصفحة 2: ذكريات وتواريخ مميزة -->
+            <div class="page" id="page2">
+                <h1>شريط ذكرياتنا.. 📆✨</h1>
+                <p>
+                    في أيام في العمر مبتتنسيش، بتفضل محفورة في القلب لأنها غيرت كل حاجة فيا. <br>
+                    كل تفصيلة، كل ضحكة، وكل كلمة اتقالت بينا هي بالنسبالي أعظم إنجاز عملته. إنتي مش مجرد شخص غالي، إنتي السند والراحة اللي دايماً بدور عليها وسط زحمة الدنيا.
+                </p>
+                <div style="font-size: 2.5rem;">🔐💞</div>
+            </div>
+
+            <!-- الصفحة 3: الوعود -->
+            <div class="page" id="page3">
+                <h1>عهدي ليكي.. 🤝❤️</h1>
+                <p>
+                    بوعدك إني أفضل دايماً هنا، في ضهرك وسندك في أي لحظة تحسّي فيها بضيق. <br>
+                    هفضل أحاول أسعدك بكل الطرق، وأكون ليكِ الأمان اللي مستحيل يتخلى عنك. طموحي وخطواتي الجاية كلها إنتي شريكة فيها ومعايا خطوة بخطوة.
+                </p>
+                <div style="font-size: 2.5rem;">O & N</div>
+            </div>
+
+            <!-- الصفحة 4: لوحة التحكم التفاعلية في السعادة -->
+            <div class="page" id="page4">
+                <h1>لوحة التحكم في السعادة </h1>
+                <p>قوليلي حاسة بإيه دلوقتي حالا؟ ودوسي على زرار مودك:</p>
+                
+                <div class="mood-container">
+                    <button class="mood-btn" onclick="setMood('happy')">مبسوطة وزي الفل </button>
+                    <button class="mood-btn" onclick="setMood('sad')">مضغوطة أو زعلانة </button>
+                    <button class="mood-btn" onclick="setMood('miss')">مفتقداك </button>
+                </div>
+                <!-- الرد الذكي الديناميكي هيظهر هنا -->
+                <div id="mood-reply"></div>
+            </div>
+
+            <!-- أزرار التنقل السفلية بين الصفحات -->
+            <div class="nav-container">
+                <button class="nav-btn" id="prevBtn" onclick="changePage(-1)" style="visibility: hidden;">السابق ➡️</button>
+                <button class="nav-btn" id="nextBtn" onclick="changePage(1)">التالي ⬅️</button>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        let currentPage = 1;
+        const totalPages = 4;
+
+        // دالة الباسوورد المعدل
+        function checkPassword() {
+            const password = document.getElementById('password-input').value;
+            const errorMsg = document.getElementById('error-message');
+            
+            if (password === '21/4') { 
+                const lockScreen = document.getElementById('lock-screen');
+                lockScreen.style.opacity = '0';
+                setTimeout(() => {
+                    lockScreen.style.display = 'none';
+                    const mainContent = document.getElementById('main-content');
+                    mainContent.style.visibility = 'visible';
+                    mainContent.style.opacity = '1';
+                    startHearts();
+                }, 1000);
+            } else {
+                errorMsg.style.display = 'block';
+            }
+        }
+
+        // تأثير المطر من القلوب
+        function startHearts() {
+            const container = document.getElementById('hearts-container');
+            setInterval(() => {
+                const heart = document.createElement('div');
+                heart.classList.add('heart');
+                heart.innerHTML = '❤️'; 
+                heart.style.left = Math.random() * 100 + 'vw';
+                heart.style.animationDuration = Math.random() * 3 + 3 + 's'; 
+                heart.style.fontSize = Math.random() * 20 + 15 + 'px'; 
+                container.appendChild(heart);
+                setTimeout(() => heart.remove(), 6000);
+            }, 300);
+        }
+
+        // بدء الرحلة وانفجار القلوب عند أول دوسة
+        function startJourney() {
+            // تأثير الانفجار البصري الفخم
+            var end = Date.now() + (2 * 1000);
+            (function frame() {
+              confetti({ particleCount: 6, angle: 60, spread: 55, origin: { x: 0 }, colors: ['#ff3366', '#ffffff'] });
+              confetti({ particleCount: 6, angle: 120, spread: 55, origin: { x: 1 }, colors: ['#ff3366', '#ffffff'] });
+              if (Date.now() < end) requestAnimationFrame(frame);
+            }());
+
+            // تبديل الكروت
+            const firstCard = document.getElementById('first-card');
+            const journeyCard = document.getElementById('journey-card');
+
+            firstCard.style.opacity = '0';
+            firstCard.style.transform = 'scale(0.8)';
+            
+            setTimeout(() => {
+                firstCard.style.display = 'none';
+                journeyCard.style.display = 'flex';
+                setTimeout(() => {
+                    journeyCard.style.opacity = '1';
+                    journeyCard.style.transform = 'scale(1)';
+                }, 50);
+            }, 500);
+        }
+
+        // التنقل الديناميكي بين الصفحات المتعددة
+        function changePage(direction) {
+            // إخفاء الصفحة الحالية
+            document.getElementById(`page${currentPage}`).classList.remove('active');
+            
+            // حساب الصفحة الجديدة
+            currentPage += direction;
+            
+            // إظهار الصفحة الجديدة
+            document.getElementById(`page${currentPage}`).classList.add('active');
+
+            // التحكم في ظهور أزرار التالي والسابق
+            document.getElementById('prevBtn').style.visibility = currentPage === 1 ? 'hidden' : 'visible';
+            document.getElementById('nextBtn').style.visibility = currentPage === totalPages ? 'hidden' : 'visible';
+            
+            // احتفال صغير مع كل صفحة جديدة!
+            confetti({ particleCount: 20, spread: 30, origin: { y: 0.7 } });
+        }
+
+        // دالة الردود التفاعلية على حسب المود في الصفحة الأخيرة
+        function setMood(mood) {
+            const replyDiv = document.getElementById('mood-reply');
+            if(mood === 'happy') {
+                replyDiv.innerHTML = "يا رب دايماً الضحكة والانبساط ميفارقوش وشك.. ضحكتك بتنور دنيتي! 🌍";
+                confetti({ particleCount: 40, spread: 60 });
+            } else if(mood === 'sad') {
+                replyDiv.innerHTML = "مفيش حاجة تستاهل تضايقك يا رُوحي.. ارمي كل همومك عليا وأنا كفيل أفرّحك، أنا دايماً جنبك. 🤍";
+            } else if(mood === 'miss') {
+                replyDiv.innerHTML = "وأنا دايماً بفكر فيكي ومش بتغيبي عن بالي ولا ثانية.. قلوبنا دايماً شايفة بعض! يا احلى نرجس";
+                confetti({ particleCount: 50, type: 'heart' });
+            }
+        }
+    </script>
+</body>
+</html>
